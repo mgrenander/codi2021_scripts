@@ -154,7 +154,7 @@ def convert_coref_json_to_ua_doc(json_doc):
 	for _id, token in enumerate(json_doc['tokens']):                      
 		if coref_strs[_id] == "":
 			coref_strs[_id] = "_"
-		sentence = "{}  {}  _  _  _  _  _  _  _  _  {}  _  _  _".format(_id, token, coref_strs[_id])
+		sentence = "{}  {}  _  _  _  _  _  _  _  _  {}  _  _  _  _".format(_id, token, coref_strs[_id])
 		lines.append(sentence)
 
 	return lines
@@ -226,7 +226,7 @@ def convert_bridg_json_to_ua_doc(json_doc):
 	for _id, token in enumerate(json_doc['tokens']):                      
 		if bridg_strs[_id] == "":
 			bridg_strs[_id] = "_"
-		sentence = "{}  {}  _  _  _  _  _  _  _  _  {}  {}  _  _".format(_id, token, coref_strs[_id], bridg_strs[_id])
+		sentence = "{}  {}  _  _  _  _  _  _  _  _  {}  {}  _  _  _".format(_id, token, coref_strs[_id], bridg_strs[_id])
 		lines.append(sentence)
 
 	return lines
