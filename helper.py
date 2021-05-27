@@ -1,23 +1,28 @@
-import json
-from os import walk
-from os.path import isfile, join
-from collections import deque
-import sys
-import argparse
-import logging
-import os
-import re
-import collections
-import json
 from preprocess import *
 
-def convert_coref_ua_to_json(UA_PATH, JSON_PATH, MODEL="spanbert_large", SEGMENT_SIZE=512):
-    if MODEL == "spanbert_large":
-        convert_coref_ua_to_json_spanbert_large(UA_PATH, JSON_PATH, SEGMENT_SIZE)
+def convert_coref_ua_to_json(UA_PATH, JSON_PATH, MODEL="coref-hoi", SEGMENT_SIZE=512, TOKENIZER_NAME="bert-base-cased"):
+    if MODEL == "coref-hoi":
+        convert_coref_ua_to_json_coref_hoi(UA_PATH, JSON_PATH, SEGMENT_SIZE, TOKENIZER_NAME)
     else:
         raise NotImplementedError
 
-def convert_coref_ua_to_json_spanbert_large(UA_PATH, JSON_PATH, SEGMENT_SIZE, TOKENIZER_NAME):
+'''
+To convert identity anaphora in UA format to jsonlines format as expected by https://github.com/lxucs/coref-hoi/.
+
+Jsonlines key-value format:
+
+    "doc_key": <Doc Key>,
+    "tokens": <Tokens>,
+    "sentences": <Segments>,
+    "speakers": <Speakers>, ## Optional
+    "constituents": [],
+    "ner": [],
+    "clusters": <Gold Coreference Clusters>,
+    'sentence_map': <Map between subtokens and sentence number>,
+    "subtoken_map": <Map between subtoken and original token>,
+    'pronouns': []
+'''
+def convert_coref_ua_to_json_coref_hoi(UA_PATH, JSON_PATH, SEGMENT_SIZE, TOKENIZER_NAME):
     
     key_docs, key_doc_sents = get_all_docs(UA_PATH)
 
@@ -36,7 +41,16 @@ def convert_bridg_ua_to_json(UA_PATH, JSON_PATH, MODEL="dali_bridging"):
     else:
         raise NotImplementedError
             
-            
+'''
+To convert bridging instances in UA format to jsonlines format as expected by https://github.com/juntaoy/dali-bridging.
+
+Jsonlines key-value format:
+
+    "clusters": <Gold Coreference Clusters>,
+    "bridging_pairs": <Gold Bridging Pairs>
+    "doc_key": <Document Key>,
+    "sentences": <Document Sentences>
+'''          
 def convert_bridg_ua_to_json_dali_bridging(UA_PATH, JSON_PATH):
     
     key_docs, key_doc_sents = get_all_docs(UA_PATH)
@@ -96,14 +110,19 @@ def convert_bridg_ua_to_json_dali_bridging(UA_PATH, JSON_PATH):
             output_file.write('\n')
             
             
-def convert_coref_json_to_ua(JSON_PATH, UA_PATH):	
+def convert_coref_json_to_ua(JSON_PATH, UA_PATH, MODEL="coref-hoi"):	
     data = []
     ua_all_lines = []
+
+    if MODEL == "coref-hoi":
+        convert_coref_json_to_ua_doc_fn = convert_coref_json_to_ua_doc_coref_hoi
+    else:
+        raise NotImplementedError
 
     with open(JSON_PATH, "r") as f:
         for r in f.readlines():
             json_doc = json.loads(r.strip())
-            ua_all_lines += convert_coref_json_to_ua_doc(json_doc) + ["\n"]
+            ua_all_lines += convert_coref_json_to_ua_doc_fn(json_doc) + ["\n"]
 
         with open(UA_PATH, "w") as f:
             for line in ua_all_lines:
@@ -116,12 +135,31 @@ def convert_coref_json_to_ua(JSON_PATH, UA_PATH):
 
 # (EntityID=1|MarkableID=markable_727|Min=1|SemType=dn)
 
-def convert_coref_json_to_ua_doc(json_doc):
+'''
+To convert identity anaphora clusters in jsonlines format as output by https://github.com/lxucs/coref-hoi/ to UA format.
+
+Expected jsonlines key-value format:
+
+    "doc_key": <Doc Key>,
+    "tokens": <Tokens>,
+    "sentences": <Segments>,
+    "speakers": <Speakers>, ## Optional
+    "constituents": [],
+    "ner": [],
+    "clusters": <Predicted Coreference Clusters>, ### IMPORTANT
+    'sentence_map': <Map between subtokens and sentence number>,
+    "subtoken_map": <Map between subtoken and original token>,
+    'pronouns': []
+''' 
+
+def convert_coref_json_to_ua_doc_coref_hoi(json_doc):
     # TODO: Include metadata
     # TODO: Include sentence breaks 
 
+    print(json_doc['doc_key'])
 
-    pred_clusters = [tuple(tuple(m) for m in cluster) for cluster in json_doc['predicted_clusters']]
+
+    pred_clusters = [tuple(tuple(m) for m in cluster) for cluster in json_doc['clusters']]
     men_to_pred = {m: clus for c, clus in enumerate(pred_clusters) for m in clus}
 
     lines = []
@@ -158,14 +196,19 @@ def convert_coref_json_to_ua_doc(json_doc):
 
     return lines
 
-def convert_bridg_json_to_ua(JSON_PATH, UA_PATH):	
+def convert_bridg_json_to_ua(JSON_PATH, UA_PATH, MODEL="dali-bridging"):	
     data = []
     ua_all_lines = []
+
+    if MODEL == "dali-bridging":
+        convert_bridg_json_to_ua_doc_fn = convert_bridg_json_to_ua_doc_dali_bridging
+    else:
+        raise NotImplementedError
 
     with open(JSON_PATH, "r") as f:
         for r in f.readlines():
             json_doc = json.loads(r.strip())
-            ua_all_lines += convert_bridg_json_to_ua_doc(json_doc) + ["\n"]
+            ua_all_lines += convert_bridg_json_to_ua_doc_fn(json_doc) + ["\n"]
 
         with open(UA_PATH, "w") as f:
             for line in ua_all_lines:
@@ -173,7 +216,18 @@ def convert_bridg_json_to_ua(JSON_PATH, UA_PATH):
 
 # (MarkableID=markable_42|MentionAnchor=markable_393)
 
-def convert_bridg_json_to_ua_doc(json_doc):
+'''
+To convert bridging instances in jsonlines format as output by https://github.com/juntaoy/dali-bridging to UA format.
+
+Expected jsonlines key-value format:
+
+    "clusters": <Coreference Clusters>,
+    "bridging_pairs": <Predicted Bridging Pairs>, ### IMPORTANT
+    "doc_key": <Document Key>,
+    "sentences": <Document Sentences>
+'''  
+
+def convert_bridg_json_to_ua_doc_dali_bridging(json_doc):
     # TODO: Include metadata
     # TODO: Include sentence breaks 
 
@@ -317,9 +371,9 @@ def discourse_deixis_rule_baseline(key_docs, key_doc_sents, output_path):
             for s in lines:
                 f.write(" ".join(s) + "\n")
                 
-def discourse_deixis_baseline(IN_PATH, PRED_PATH):
+def discourse_deixis_baseline(IN_UA_PATH, PRED_UA_PATH):
                 
-    key_docs, key_doc_sents = get_all_docs(IN_PATH)
+    key_docs, key_doc_sents = get_all_docs(IN_UA_PATH)
 
     doc_coref_infos = {}
     doc_non_referrig_infos = {}
@@ -344,4 +398,4 @@ def discourse_deixis_baseline(IN_PATH, PRED_PATH):
         doc_coref_infos[doc] = (key_clusters, [])
         doc_non_referrig_infos[doc] = key_non_referrings
             
-    discourse_deixis_rule_baseline(key_docs, key_doc_sents, PRED_PATH)
+    discourse_deixis_rule_baseline(key_docs, key_doc_sents, PRED_UA_PATH)

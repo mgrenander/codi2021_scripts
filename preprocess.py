@@ -1,11 +1,11 @@
-import argparse
-import logging
-import os
-import re
-import collections
 import json
-from os import makedirs
-from os.path import join
+import os
+from os import walk, makedirs
+from os.path import isfile, join
+from collections import deque
+import sys
+import logging
+import re
 import numpy as np
 import random
 from transformers import BertTokenizer
