@@ -285,7 +285,7 @@ def convert_bridg_json_to_ua_doc_dali_bridging(json_doc):
     return lines
 
 
-def discourse_deixis_rule_baseline(key_docs, key_doc_sents, output_path):
+def discourse_deixis_prev_utt_baseline(key_docs, key_doc_sents, output_path):
 
     with open(output_path, "w") as f:
         for doc in key_docs:
@@ -370,8 +370,11 @@ def discourse_deixis_rule_baseline(key_docs, key_doc_sents, output_path):
             f.write("# newdoc id = " + doc + "\n")
             for s in lines:
                 f.write(" ".join(s) + "\n")
-                
-def discourse_deixis_baseline(IN_UA_PATH, PRED_UA_PATH):
+
+'''
+Baseline for discourse deixis
+'''                
+def discourse_deixis_baseline(IN_UA_PATH, PRED_UA_PATH, MODEL="previous-utterance"):
                 
     key_docs, key_doc_sents = get_all_docs(IN_UA_PATH)
 
@@ -398,4 +401,7 @@ def discourse_deixis_baseline(IN_UA_PATH, PRED_UA_PATH):
         doc_coref_infos[doc] = (key_clusters, [])
         doc_non_referrig_infos[doc] = key_non_referrings
             
-    discourse_deixis_rule_baseline(key_docs, key_doc_sents, PRED_UA_PATH)
+    if MODEL == "previous-utterance":
+        discourse_deixis_prev_utt_baseline(key_docs, key_doc_sents, PRED_UA_PATH)
+    else:
+        raise NotImplementedError

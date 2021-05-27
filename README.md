@@ -31,3 +31,9 @@ Scripts to convert the [Universal Anaphora](https://github.com/UniversalAnaphora
 ```helper.convert_bridg_json_to_ua(JSON_PATH, UA_PATH, MODEL="dali-bridging")```
 
 > **NOTE:** Currently, these scripts only support conversion to and from the format used by [dali-bridging](https://github.com/juntaoy/dali-bridging).
+
+
+#### Discourse Deixis
+
+1. Previous Utterance Baseline (for "this", "that")
+```helper.discourse_deixis_baseline(IN_UA_PATH, PRED_UA_PATH, MODEL="previous-utterance")```
