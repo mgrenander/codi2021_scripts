@@ -9,13 +9,15 @@ Scripts to convert the [Universal Anaphora](https://github.com/UniversalAnaphora
 
 ## Commands for conversion
 
+```import helper```
+
 #### Identity Anaphora
 
 1. UA to jsonlines 
-```convert_coref_ua_to_json(UA_PATH, JSON_PATH, MODEL="coref-hoi", SEGMENT_SIZE=512, TOKENIZER_NAME="bert-base-cased")```
+```helper.convert_coref_ua_to_json(UA_PATH, JSON_PATH, MODEL="coref-hoi", SEGMENT_SIZE=512, TOKENIZER_NAME="bert-base-cased")```
 
 2. jsonlines to UA 
-```convert_coref_json_to_ua(JSON_PATH, UA_PATH, MODEL="coref-hoi")```
+```helper.convert_coref_json_to_ua(JSON_PATH, UA_PATH, MODEL="coref-hoi")```
 
 > **NOTE:** Currently, these scripts only support conversion to and from the format used by models that use bert/spanbert embeddings. E.g. [coref-hoi](https://github.com/lxucs/coref-hoi/).
 
@@ -23,9 +25,9 @@ Scripts to convert the [Universal Anaphora](https://github.com/UniversalAnaphora
 #### Bridging
 
 1. UA to jsonlines 
-```convert_bridg_ua_to_json(UA_PATH, JSON_PATH, MODEL="dali_bridging")```
+```helper.convert_bridg_ua_to_json(UA_PATH, JSON_PATH, MODEL="dali_bridging")```
 
 2. jsonlines to UA 
-```convert_bridg_json_to_ua(JSON_PATH, UA_PATH, MODEL="dali-bridging")```
+```helper.convert_bridg_json_to_ua(JSON_PATH, UA_PATH, MODEL="dali-bridging")```
 
 > **NOTE:** Currently, these scripts only support conversion to and from the format used by [dali-bridging](https://github.com/juntaoy/dali-bridging).
