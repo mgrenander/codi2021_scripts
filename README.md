@@ -5,7 +5,7 @@ Scripts to convert the [Universal Anaphora](https://github.com/UniversalAnaphora
 
 2. `preprocess.py` contains scripts to parse annotation structure from UA documents
 
-3. `conllua_dir` and `json_dir_*` contain UA and jsonlines files (respectively) for AMI, Switchboard, and Light datasets.
+3. `conllua_dir` and `json_dir_*` contain UA and jsonlines files (respectively) for AMI, Persuasion, and Light datasets.
 
 ## Commands for conversion
 
