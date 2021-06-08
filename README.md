@@ -37,3 +37,11 @@ Scripts to convert the [Universal Anaphora](https://github.com/UniversalAnaphora
 
 1. Previous Utterance Baseline (for "this", "that")
 ```helper.discourse_deixis_baseline(IN_UA_PATH, PRED_UA_PATH, MODEL="previous-utterance")```
+
+## Baseline Performance
+
+|                                   | Model | AMI   | LIGHT | Persuasion | Swbd  | ARRAU (Trains91) |
+| --------------------------------- | ----- | ----- | ----- | ---------- | ----- | ---------------- |
+| Identity Anaphora (CoNLL Avg. F1) | [coref-hoi](https://github.com/lxucs/coref-hoi/) | 35.58 | 53.11 | TODO       | 45.91 | 46.29            |
+| Bridging (Entity F1)              | [dali-bridging](https://github.com/juntaoy/dali-bridging) | TODO  | 5.76  | TODO       | 5.39  | 7.50             |
+| Discourse Deixis (CoNLL Avg. F1)  | [prev-utterance](https://github.com/sopankhosla/codi2021_scripts/blob/3509e2c588cd5097b4778b7754b0b1a89b06b478/helper.py#L377) | 15.88 | 10.10 | TODO       | 11.58 | 13.41            |
