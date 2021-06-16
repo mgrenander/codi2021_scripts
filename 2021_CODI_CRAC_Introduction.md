@@ -1,6 +1,6 @@
 # The 2021 CODI/CRAC Shared Task on Anaphoric Reference in Dialogue: A Quick Intro
 
-  Sopan Khosla, Ramesh Manuvinakurike, Vincent Ng, Massimo Poesio, Michael Strube, Juntao Yu, Carolyn RosÃ©
+  Sopan Khosla, Ramesh Manuvinakurike, Vincent Ng, Massimo Poesio, Michael Strube, Juntao Yu, Carolyn Rose
 
   https://competitions.codalab.org/competitions/30312
 
