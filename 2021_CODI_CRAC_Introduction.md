@@ -304,14 +304,13 @@ The new [Universal Anaphora scorer](https://github.com/juntaoy/universal-anaphor
 
 - For Task 1, the [Evaluating coreference relations (including split-antecedents) and singletons](https://github.com/juntaoy/universal-anaphora-scorer/blob/main/README.md#evaluating-coreference-relations-include-split-antecedents-and-singletons) modality will be used. Non-referring expressions identification will not be scored.
 
+  `python ua-scorer.py key system`
+
 - For Task 2, the scorer will be called using the command
 
-  python ua-scorer.py key system keep_bridging
+  `python ua-scorer.py key system keep_bridging`
 
 - For Task 3, the scorer will be called using the command
 
-  python ua-scorer.py key system evaluate_discourse_deixis
-
-
-
+  `python ua-scorer.py key system evaluate_discourse_deixis`
 
