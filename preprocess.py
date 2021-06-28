@@ -2,6 +2,7 @@ import json
 import os
 from os import walk, makedirs
 from os.path import isfile, join
+import collections
 from collections import deque
 import sys
 import logging
@@ -556,7 +557,10 @@ def get_all_docs(path):
                 all_doc_sents[doc_name] = sentences
                 doc_lines = []
                 sentences = []
+            cur_spk = "_"
             doc_name = line[len('# newdoc id = '):]
+        elif "# speaker = " in line:
+            cur_spk = line[len('# speaker = '):]
         elif line.startswith('#'):
             continue
         elif len(line) == 0:
@@ -564,8 +568,11 @@ def get_all_docs(path):
             sentence = []
             continue
         else:
+            splt_line = line.split()
+            splt_line[9] = "_".join(cur_spk.split())
+            line = " ".join(splt_line)
             doc_lines.append(line)
-            sentence.append(line.split()[1])
+            sentence.append(splt_line[1])
                 
     sentences.append(sentence)
     if doc_name and doc_lines:
