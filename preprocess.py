@@ -9,7 +9,7 @@ import logging
 import re
 import numpy as np
 import random
-from transformers import BertTokenizer
+from transformers import AutoTokenizer
 
 logging.basicConfig(format='%(asctime)s - %(levelname)s - %(name)s - %(message)s',
                     datefmt='%m/%d/%Y %H:%M:%S', level=logging.INFO)
@@ -20,7 +20,7 @@ def flatten(l):
 
 
 def get_tokenizer(bert_tokenizer_name):
-    return BertTokenizer.from_pretrained(bert_tokenizer_name)
+    return AutoTokenizer.from_pretrained(bert_tokenizer_name)
 
 
 def skip_doc(doc_key):
@@ -339,16 +339,24 @@ class UADocumentState(DocumentState):
             'pronouns': self.pronouns
         }
 
-def split_into_segments(document_state: DocumentState, max_seg_len, constraints1, constraints2, tokenizer):
+def split_into_segments(document_state: DocumentState, max_seg_len, constraints1, constraints2, tokenizer, sentences=False):
     """ Split into segments.
         Add subtokens, subtoken_map, info for each segment; add CLS, SEP in the segment subtokens
         Input document_state: tokens, subtokens, token_end, sentence_end, utterance_end, subtoken_map, info
     """
     curr_idx = 0  # Index for subtokens
     prev_token_idx = 0
+    boundaries = [i for i, c1 in enumerate(constraints1) if c1]
+    curr_sent = 0
     while curr_idx < len(document_state.subtokens):
         # Try to split at a sentence end point
-        end_idx = min(curr_idx + max_seg_len - 1 - 2, len(document_state.subtokens) - 1)  # Inclusive
+        if not sentences:
+            end_idx = min(curr_idx + max_seg_len - 1 - 2, len(document_state.subtokens) - 1)  # Inclusive
+        else:
+            end_idx = min(curr_idx + 512 - 1 - 2,
+                          len(document_state.subtokens) - 1,
+                          boundaries[curr_sent] if curr_sent < len(boundaries) else 1000000)
+            curr_sent += max_seg_len
         while end_idx >= curr_idx and not constraints1[end_idx]:
             end_idx -= 1
         if end_idx < curr_idx:
@@ -566,6 +574,7 @@ def get_all_docs(path):
         elif len(line) == 0:
             sentences.append(sentence)
             sentence = []
+            doc_lines.append('')
             continue
         else:
             splt_line = line.split()
@@ -575,6 +584,7 @@ def get_all_docs(path):
             sentence.append(splt_line[1])
                 
     sentences.append(sentence)
+    doc_lines.append('')
     if doc_name and doc_lines:
         all_docs[doc_name] = doc_lines
         all_doc_sents[doc_name] = sentences
@@ -587,7 +597,7 @@ def get_markable_assignments(clusters):
             markable_cluster_ids[m] = cluster_id
     return markable_cluster_ids
 
-def get_document(doc_key, doc_lines, language, seg_len, tokenizer):
+def get_document(doc_key, doc_lines, language, seg_len, tokenizer, sentences=False):
     """ Process raw input to finalized documents """
     document_state = UADocumentState(doc_key)
     word_idx = -1
@@ -613,6 +623,6 @@ def get_document(doc_key, doc_lines, language, seg_len, tokenizer):
 
     # Split documents
     constraits1 = document_state.sentence_end if language != 'arabic' else document_state.token_end
-    split_into_segments(document_state, seg_len, constraits1, document_state.token_end, tokenizer)
+    split_into_segments(document_state, seg_len, constraits1, document_state.token_end, tokenizer, sentences)
     document = document_state.finalize()
     return document

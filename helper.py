@@ -1,8 +1,8 @@
 from preprocess import *
 
-def convert_coref_ua_to_json(UA_PATH, JSON_PATH, MODEL="coref-hoi", SEGMENT_SIZE=512, TOKENIZER_NAME="bert-base-cased"):
+def convert_coref_ua_to_json(UA_PATH, JSON_PATH, MODEL="coref-hoi", SEGMENT_SIZE=512, TOKENIZER_NAME="bert-base-cased", sentences=False):
     if MODEL == "coref-hoi":
-        convert_coref_ua_to_json_coref_hoi(UA_PATH, JSON_PATH, SEGMENT_SIZE, TOKENIZER_NAME)
+        convert_coref_ua_to_json_coref_hoi(UA_PATH, JSON_PATH, SEGMENT_SIZE, TOKENIZER_NAME, sentences)
     else:
         raise NotImplementedError
 
@@ -22,7 +22,7 @@ Jsonlines key-value format:
     "subtoken_map": <Map between subtoken and original token>,
     'pronouns': []
 '''
-def convert_coref_ua_to_json_coref_hoi(UA_PATH, JSON_PATH, SEGMENT_SIZE, TOKENIZER_NAME):
+def convert_coref_ua_to_json_coref_hoi(UA_PATH, JSON_PATH, SEGMENT_SIZE, TOKENIZER_NAME, sentences=False):
     
     key_docs, key_doc_sents = get_all_docs(UA_PATH)
 
@@ -31,7 +31,7 @@ def convert_coref_ua_to_json_coref_hoi(UA_PATH, JSON_PATH, SEGMENT_SIZE, TOKENIZ
     with open(JSON_PATH, "w") as output_file:
         for doc in key_doc_sents:
             print(doc)
-            document = get_document(doc, key_docs[doc], 'english', SEGMENT_SIZE, tokenizer)
+            document = get_document(doc, key_docs[doc], 'english', SEGMENT_SIZE, tokenizer, sentences)
             output_file.write(json.dumps(document))
             output_file.write('\n')
             

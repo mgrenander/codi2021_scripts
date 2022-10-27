@@ -12,7 +12,7 @@ Scripts to convert the [Universal Anaphora](https://github.com/UniversalAnaphora
 #### Identity Anaphora
 
 1. UA to jsonlines 
-```helper.convert_coref_ua_to_json(UA_PATH, JSON_PATH, MODEL="coref-hoi", SEGMENT_SIZE=512, TOKENIZER_NAME="bert-base-cased")```
+```helper.convert_coref_ua_to_json(UA_PATH, JSON_PATH, MODEL="coref-hoi", SEGMENT_SIZE=512, TOKENIZER_NAME="bert-base-cased", sentences=False)```
 
 2. jsonlines to UA 
 ```helper.convert_coref_json_to_ua(JSON_PATH, UA_PATH, MODEL="coref-hoi")```
