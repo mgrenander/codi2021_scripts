@@ -17,7 +17,7 @@ if __name__ == "__main__":
     parser.add_argument("--tokenizer_name", type=str, default="xlnet-base-cased", help="Tokenizer name")
 
     parser.add_argument("--ami_dev_file", type=str, default="AMI_dev.CONLLUA")
-    parser.add_argument("--ami_test_file", type=str, default="AMI_test.conlllua")
+    parser.add_argument("--ami_test_file", type=str, default="AMI_test.conllua")
     parser.add_argument("--light_dev_file", type=str, default="light_dev.CONLLUA")
     parser.add_argument("--light_test_file", type=str, default="light_test.CONLLUA")
     parser.add_argument("--persuasion_dev_file", type=str, default="Persuasion_dev.CONLLUA")
