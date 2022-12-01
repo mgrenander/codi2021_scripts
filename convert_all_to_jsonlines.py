@@ -13,7 +13,6 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument("--input_dir", type=str, required=True, help="Input directory to .CONLLUA files")
     parser.add_argument("--output_dir", type=str, required=True, help="Output directory for .jsonlines files")
-    parser.add_argument("--segment_size", type=int, default=512)
     parser.add_argument("--tokenizer_name", type=str, default="xlnet-base-cased", help="Tokenizer name")
 
     parser.add_argument("--ami_dev_file", type=str, default="AMI_dev.CONLLUA")
@@ -54,19 +53,11 @@ if __name__ == "__main__":
     ]
 
     for input_dataset_name, output_dataset_name in zip(input_dataset_names, output_dataset_names):
-        non_inc_jsonlines_name = output_dataset_name + f'.{seg_size}' + f'.{tok_name}.jsonlines'
-        logger.info("Converting {} to {}".format(input_dataset_name, non_inc_jsonlines_name))
-        helper.convert_coref_ua_to_json(input_dataset_name,
-                                        non_inc_jsonlines_name,
-                                        SEGMENT_SIZE=seg_size,
-                                        TOKENIZER_NAME=tok_name,
-                                        sentences=False)
-
-        sent_inc_jsonlines_name = output_dataset_name + f'.sents.{tok_name}.jsonlines'
-        logger.info("Converting {} to {}".format(input_dataset_name, sent_inc_jsonlines_name))
-        helper.convert_coref_ua_to_json(input_dataset_name,
-                                        sent_inc_jsonlines_name,
-                                        TOKENIZER_NAME=tok_name,
-                                        sentences=True)
-
+        jsonlines_name = output_dataset_name + '.sents' + f'.{tok_name}.jsonlines'
+        logger.info("Converting {} to {}".format(input_dataset_name, jsonlines_name))
+        helper.convert_coref_ua_to_json_coref_hoi(input_dataset_name,
+                                                  jsonlines_name,
+                                                  1,
+                                                  TOKENIZER_NAME='xlnet-base-cased',
+                                                  sentences=True)
     logger.info("Done processing.")
