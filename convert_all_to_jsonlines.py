@@ -27,7 +27,6 @@ if __name__ == "__main__":
     args = parser.parse_args()
     input_dir = args.input_dir
     out_dir = args.output_dir
-    seg_size = args.segment_size
     tok_name = args.tokenizer_name
 
     input_dataset_names = [
